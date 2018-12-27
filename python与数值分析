@@ -1,0 +1,139 @@
+#用Python解决高数所有计算题--sympy求解极限、积分、微分、二元一次方程等
+
+
+
+sympy是什么？
+
+Sympy是一个数学符号库（sym代表了symbol，符号），包括了积分，微分方程等各种数学运算方法，为python提供了强大的数学运算支持。对于图像来说，虽然都是做离散的计算，操作最多的还是numpy里的数组，但实际上，这个库包含了积分微分，三角等最基本的数学运算，可以说是工科最基本的，用起来媲美matlab。 
+--摘自网络
+
+什么是基于符号的计算（符号求解）？
+
+在高数学习中，甚至在工作中，都会面临计算基本微积分的问题。可能你会想，只要写个程序，运用极限法思想，全部都用双精度浮点数就能八九不离十的解出来。但是请看下面：
+>>> import sympy, math
+>>> math.sqrt(2) ** 2
+2.0000000000000004
+>>> sympy.sqrt(2) ** 2
+2
+ 
+为什么用sympy的计算结果貌似要比math单纯浮点计算后误差小很多，或者说基本没有？
+>>> x = sympy.Symbol('x')
+>>> sympy.sqrt(x) ** 2
+x
+>>> sympy.sqrt(8)
+2*sqrt(2)
+
+sympy安装
+sudo pip install sympy 或者 sudo pip3 install sympy
+如果你用anaconda则 conda install sympy
+Let's get started!
+
+首先我们从sympy包中导入所有内建函数
+from __future__ import division 
+#如果你用的python2，请加上上面这句话导入python3的除法
+#将Python2的除法操作符“/”从整数除法改为普通除法
+from sympy import *
+x = Symbol('x')
+y = Symbol('y')
+z = Symbol('z')
+a = Symbol('a')
+b = Symbol('b')
+c = Symbol('c')
+# 等同于 x, y, z, a, b, c = symbols('x, y, z, a, b, c')
+# 建议用下面这种表达，因为一个一个导入符号实在是太麻烦了。
+f = (2/3)*x**2 + (1/3)*x**2 + x + x + 1
+simplify表达式化简
+f.simplify()
+print(f)
+结果：
+x**2 + 2*x + 1
+对，就是这么简单。
+
+expand表达式展开
+>>> f = (x+1)**2
+>>> print(expand(f))
+x**2 + 2*x + 1
+solve方程自动求解
+
+f1 = 2*x - y + z - 10
+f2 = 3*x + 2*y - z - 16
+f3 = x + 6*y - z - 28
+print(solve([f1, f2, f3]))
+结果：
+{x: 46/11, z: 74/11, y: 56/11}
+limit求极限
+
+
+f = (x+1)**2 + 1
+print(limit(f, x, a-1))
+结果：a**2 + 1
+
+>>> f = sin(x)/x
+>>> print(limit(f, x, 0)) # 输入三个值，函数，自变量，自变量取值
+1
+从负方向逼近，dir可以取'+' 或者 '-'
+>>> print(limit(f, x, 0, dir='-'))
+1
+
+f = cos(x)
+dx = Symbol('dx')
+>>> print(limit(f, x, a)) # 这个的意思是函数f，自变量x用a代入
+cos(a)
+>>> print(limit(f, x, a-dx))# f的自变量x用a-dx代入
+cos(a - dx)
+>>> print(limit((limit(f,x,a)-limit(f,x,a-dx))/dx, dx, 0))
+-sin(a) #这就是答案
+
+>>> n = Symbol('n')
+>>> print(limit(((n+3)/(n+2))**n, n, oo))
+E
+无穷用oo表示，负无穷用-oo
+
+diff求导
+
+diff(你的函数，自变量，求导的次数） 
+>>> diff(sin(2*x), x) 
+2*cos(2*x)
+>>> sin(2*x).diff(x) 
+2*cos(2*x)
+>>> diff(sin(2*x), x, 2) 
+-4*sin(2*x)
+>>> diff(sin(2*x), x, 3)
+-8*cos(2*x)
+>>> diff(sin(x*y), x,2,y,3) 
+x*(x**2*y**2*cos(x*y) + 6*x*y*sin(x*y) - 6*cos(x*y))
+dsolve()计算微分方程
+>>> x = symbols("x", real=True) # 定义符号x 为实数 
+>>>eq1 = dsolve(f(x).diff(x) + f(x)**2 + f(x), f(x)) 
+>>>eq1
+f(x) == -C1/(C1 - exp(x))
+如果设置hint参数为“best”,就能得到更简单的显函数表达式
+>>> eq2 = dsolve(f(x).diff(x) + f(x)**2 + f(x), f(x), hint="best")
+>>> eq2
+f(x) == -C1/(C1 - exp(x))
+intergrate积分计算
+
+1. 定积分
+>>> f = x**2 + 1
+>>> integrate(f, (x, -1, 1))
+8/3
+
+>>> integrate(exp(x), (x, -oo, 0))
+1
+2. 不定积分
+
+>>> f = 3*x**2 + 1
+>>> integrate(f, x)
+x**3 + x
+3. 双重定积分
+
+>>> f = (4/3)*x + 2*y
+>>> integrate(f, (x, 0, 1), (y, -3, 4))
+21/2
+4. 双重不定积分
+
+>>> f = (4/3)*x + 2*y
+>>> integrate(f, (x, 0, 1), (y, -x, x))
+x
+有一份很详细的文档，内容完备，如果你想深入了解，不妨下载下来：
+链接:https://pan.baidu.com/s/1wKmK2h9GCGDWUrntkQSZJQ  密码:rb4r
